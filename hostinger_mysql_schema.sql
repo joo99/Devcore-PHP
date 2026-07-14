@@ -130,3 +130,30 @@ SELECT id, 'male', 'دكتور', 1 FROM departments;
 
 INSERT INTO doctor_types (department_id, type, label, enabled)
 SELECT id, 'female', 'دكتورة', 0 FROM departments;
+
+-- ---------- 6) chat_rooms ----------
+CREATE TABLE IF NOT EXISTS chat_rooms (
+  id             BIGINT       NOT NULL AUTO_INCREMENT,
+  doctor_id      VARCHAR(255) NOT NULL,
+  patient_name   VARCHAR(255) NOT NULL,
+  patient_phone  VARCHAR(50)  NOT NULL,
+  status         ENUM('active','closed','archived') NOT NULL DEFAULT 'active',
+  created_at     DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  updated_at     DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (id),
+  KEY idx_chat_rooms_doctor (doctor_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ---------- 7) chat_messages ----------
+CREATE TABLE IF NOT EXISTS chat_messages (
+  id             BIGINT       NOT NULL AUTO_INCREMENT,
+  room_id        BIGINT       NOT NULL,
+  sender_type    ENUM('patient','doctor','system') NOT NULL,
+  message        TEXT         NOT NULL,
+  is_read        TINYINT(1)   NOT NULL DEFAULT 0,
+  created_at     DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (id),
+  KEY idx_chat_messages_room (room_id),
+  CONSTRAINT fk_chat_messages_room
+    FOREIGN KEY (room_id) REFERENCES chat_rooms (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -13,6 +13,7 @@ require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../helpers/http.php';
 require_once __DIR__ . '/../helpers/jwt.php';
 require_once __DIR__ . '/../helpers/slots.php';
+require_once __DIR__ . '/../helpers/chatHelper.php';
 
 // ===== CORS (equivalent to app.use(cors())) =====
 header('Access-Control-Allow-Origin: *');
@@ -1388,6 +1389,46 @@ route($routes, 'DELETE', '#^/api/admins/([^/]+)$#', function (array $p) {
         error_log('❌ Server error: ' . $e->getMessage());
         jsonError('Server error: ' . $e->getMessage(), 500);
     }
+});
+
+// ============================
+// 8. Chat
+// ============================
+
+route($routes, 'POST', '#^/api/chat/rooms/create$#', function () {
+    $db = getDb();
+    $helper = new ChatHelper($db);
+    $helper->createChatRoom(getJsonBody());
+});
+
+route($routes, 'GET', '#^/api/chat/rooms$#', function () {
+    $db = getDb();
+    $helper = new ChatHelper($db);
+    $helper->getChatRooms($_GET);
+});
+
+route($routes, 'GET', '#^/api/chat/rooms/([^/]+)$#', function (array $p) {
+    $db = getDb();
+    $helper = new ChatHelper($db);
+    $helper->getChatRoom($p[1]);
+});
+
+route($routes, 'POST', '#^/api/chat/messages/send$#', function () {
+    $db = getDb();
+    $helper = new ChatHelper($db);
+    $helper->sendMessage(getJsonBody());
+});
+
+route($routes, 'PATCH', '#^/api/chat/rooms/([^/]+)/status$#', function (array $p) {
+    $db = getDb();
+    $helper = new ChatHelper($db);
+    $helper->updateChatRoomStatus($p[1], getJsonBody());
+});
+
+route($routes, 'DELETE', '#^/api/chat/rooms/([^/]+)$#', function (array $p) {
+    $db = getDb();
+    $helper = new ChatHelper($db);
+    $helper->deleteChatRoom($p[1], $_GET);
 });
 
 // ============================
