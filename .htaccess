@@ -1,0 +1,23 @@
+# ============================================================
+# Place this file in the public_html root on Hostinger
+# (next to the React site's index.html and the api/ folder).
+# Hostinger forces HTTPS automatically, so we don't add an HTTPS redirect rule
+# here (avoids a redirect loop). Purpose: protect backend files + React Router.
+# ============================================================
+
+RewriteEngine On
+
+# ===== 1) Protect sensitive files/folders from direct web access =====
+<FilesMatch "(^\.env|\.env\..*|\.sql|\.md)$">
+    Require all denied
+</FilesMatch>
+RedirectMatch 403 ^/(config|helpers)(/.*)?$
+
+# ===== 2) Leave /api and existing files/folders untouched =====
+RewriteCond %{REQUEST_URI} ^/api/ [OR]
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ===== 3) React Router: send everything else to index.html =====
+RewriteRule ^ index.html [L]

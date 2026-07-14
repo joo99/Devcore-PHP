@@ -1,0 +1,14 @@
+# ============================================================
+# Place this file inside public_html/api/
+# Front controller: routes every /api/* request to index.php
+# (the router in index.php reads REQUEST_URI and matches the path)
+# ============================================================
+
+RewriteEngine On
+
+# Allow direct access to real files that exist inside api/ (if any)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Route any other request under /api to index.php, preserving the query string
+RewriteRule ^ index.php [QSA,L]
