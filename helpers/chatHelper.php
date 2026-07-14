@@ -156,6 +156,7 @@ class ChatHelper {
             http_response_code(201);
             echo json_encode([
                 'success' => true,
+                'message' => 'Message sent successfully',
                 'data' => $newMessage
             ]);
         } catch (PDOException $e) {
